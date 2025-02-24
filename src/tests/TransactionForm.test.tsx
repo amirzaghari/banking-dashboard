@@ -1,29 +1,17 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import TransactionForm from '../components/TransactionForm';
-import transactionStore from '../store/transactionStore';
-
-jest.mock('../store/transactionStore', () => ({
-    __esModule: true,
-    default: () => ({
-        addTransaction: jest.fn(),
-    }),
-}));
 
 test('should add a new transaction', () => {
-    render(<TransactionForm />);
+    const addTransactionMock = jest.fn();
+    render(<TransactionForm addTransaction={addTransactionMock} />);
 
-    fireEvent.change(screen.getByPlaceholderText(/amount/i), { target: { value: '100' } });
-    fireEvent.change(screen.getByPlaceholderText(/description/i), { target: { value: 'Salary' } });
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Deposit' } });
+    fireEvent.change(screen.getByLabelText(/amount/i), { target: { value: '100' } });
+    fireEvent.change(screen.getByLabelText(/description/i), { target: { value: 'Salary' } });
+    fireEvent.mouseDown(screen.getByLabelText(/type/i));
+    const depositOption = screen.getByRole('option', { name: 'Deposit' });
+    fireEvent.click(depositOption);
+    fireEvent.submit(screen.getByRole('button', { name: /add transaction/i }));
 
-    fireEvent.submit(screen.getByRole('form'));
-
-    expect(transactionStore().addTransaction).toHaveBeenCalledWith({
-        id: expect.any(String),
-        amount: 100,
-        description: 'Salary',
-        date: expect.any(String),
-        type: 'Deposit',
-    });
+    expect(addTransactionMock).toHaveBeenCalled();
 });

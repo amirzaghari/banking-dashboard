@@ -1,4 +1,6 @@
-import useTransactionStore, {Transaction} from "../store/transactionStore";
+import React from 'react';
+import { Chip, Box } from '@mui/material';
+import useTransactionStore, { Transaction } from "../store/transactionStore";
 
 const AccountOverview = () => {
     const { balance, transactions } = useTransactionStore();
@@ -12,12 +14,13 @@ const AccountOverview = () => {
         .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
     return (
-        <div>
-            <h2>Account Overview</h2>
-            <p>Balance: €{balance.toFixed(2)}</p>
-            <p>Total Income: €{totalIncome.toFixed(2)}</p>
-            <p>Total Expenses: €{totalExpenses.toFixed(2)}</p>
-        </div>
+        <Box>
+            <Box display="flex" flexDirection="column" gap={1}>
+                <Chip label={`Balance: €${balance.toFixed(2)}`} color="primary" />
+                <Chip label={`Total Income: €${totalIncome.toFixed(2)}`} color="success" />
+                <Chip label={`Total Expenses: €${totalExpenses.toFixed(2)}`} color="error" />
+            </Box>
+        </Box>
     );
 };
 

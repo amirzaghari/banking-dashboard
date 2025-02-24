@@ -11,67 +11,65 @@ export type Transaction = {
 type TransactionStore = {
     transactions: Transaction[];
     balance: number;
+    history: Transaction[];
     addTransaction: (transaction: Transaction) => void;
     removeTransaction: (id: string) => void;
     undoTransaction: () => void;
     updateTransaction: (id: string, updatedTransaction: Transaction) => void;
 };
 
+const calculateBalance = (transactions: Transaction[]): number =>
+    transactions.reduce((sum, t) => (t.type === "Deposit" ? sum + t.amount : sum - t.amount), 0);
+
+const saveToLocalStorage = (transactions: Transaction[], balance: number) => {
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+    localStorage.setItem("balance", JSON.stringify(balance));
+};
+
 const useTransactionStore = create<TransactionStore>((set, get) => ({
     transactions: JSON.parse(localStorage.getItem("transactions") || "[]"),
     balance: JSON.parse(localStorage.getItem("balance") || "0"),
+    history: [],
 
-    addTransaction: (transaction: Transaction) => {
+    addTransaction: (transaction) => {
         const updatedTransactions = [...get().transactions, transaction];
-        const newBalance =
-            transaction.type === "Deposit"
-                ? get().balance + transaction.amount
-                : get().balance - transaction.amount;
+        const newBalance = calculateBalance(updatedTransactions);
 
-        localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
-        localStorage.setItem("balance", JSON.stringify(newBalance));
-
+        saveToLocalStorage(updatedTransactions, newBalance);
         set({ transactions: updatedTransactions, balance: newBalance });
     },
 
     removeTransaction: (id) => {
-        const updatedTransactions = get().transactions.filter((t) => t.id !== id);
-        const newBalance = updatedTransactions.reduce(
-            (sum, t) => (t.type === "Deposit" ? sum + t.amount : sum - t.amount),
-            0
-        );
+        const { transactions, history } = get();
+        const transactionToRemove = transactions.find((t) => t.id === id);
+        if (!transactionToRemove) return;
 
-        localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
-        localStorage.setItem("balance", JSON.stringify(newBalance));
+        const updatedTransactions = transactions.filter((t) => t.id !== id);
+        const newBalance = calculateBalance(updatedTransactions);
 
-        set({ transactions: updatedTransactions, balance: newBalance });
+        saveToLocalStorage(updatedTransactions, newBalance);
+        set({ transactions: updatedTransactions, balance: newBalance, history: [transactionToRemove, ...history] });
     },
 
     undoTransaction: () => {
-        const prevTransactions = get().transactions.slice(0, -1);
-        const newBalance = prevTransactions.reduce(
-            (sum, t) => (t.type === "Deposit" ? sum + t.amount : sum - t.amount),
-            0
-        );
+        const { transactions, history } = get();
+        if (history.length === 0) return;
 
-        localStorage.setItem("transactions", JSON.stringify(prevTransactions));
-        localStorage.setItem("balance", JSON.stringify(newBalance));
+        const lastDeleted = history[0];
+        const updatedTransactions = [...transactions, lastDeleted];
+        const newBalance = calculateBalance(updatedTransactions);
 
-        set({ transactions: prevTransactions, balance: newBalance });
+        saveToLocalStorage(updatedTransactions, newBalance);
+        set({ transactions: updatedTransactions, balance: newBalance, history: history.slice(1) });
     },
 
     updateTransaction: (id, updatedTransaction) => {
         const updatedTransactions = get().transactions.map((t) =>
             t.id === id ? updatedTransaction : t
         );
-        const newBalance = updatedTransactions.reduce(
-            (sum, t) => (t.type === "Deposit" ? sum + t.amount : sum - t.amount),
-            0
-        );
+        const newBalance = calculateBalance(updatedTransactions);
 
-        localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
-        localStorage.setItem("balance", JSON.stringify(newBalance));
-
+        saveToLocalStorage(updatedTransactions, newBalance);
         set({ transactions: updatedTransactions, balance: newBalance });
     },
 }));
