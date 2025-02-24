@@ -26,22 +26,31 @@ const TransactionForm = () => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <input
-                type="number"
-                placeholder="Amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-            />
-            <select value={type} onChange={(e) => setType(e.target.value as any)}>
-                <option value="Deposit">Deposit</option>
-                <option value="Withdrawal">Withdrawal</option>
-            </select>
+            <label>
+                Amount:
+                <input
+                    type="number"
+                    placeholder="Amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                />
+            </label>
+            <label>
+                Description:
+                <input
+                    type="text"
+                    placeholder="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                />
+            </label>
+            <label>
+                Type:
+                <select value={type} onChange={(e) => setType(e.target.value as any)}>
+                    <option value="Deposit">Deposit</option>
+                    <option value="Withdrawal">Withdrawal</option>
+                </select>
+            </label>
             <button type="submit">Add Transaction</button>
         </form>
     );

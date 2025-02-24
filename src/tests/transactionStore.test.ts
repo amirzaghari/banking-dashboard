@@ -1,39 +1,45 @@
-import useTransactionStore from "../store/transactionStore";
+import useTransactionStore from '../store/transactionStore';
 
-beforeEach(() => {
-    localStorage.clear();
-    jest.clearAllMocks();
-});
+describe('Transaction Store', () => {
+    beforeEach(() => {
+        useTransactionStore.setState({
+            transactions: [],
+            balance: 0,
+        });
+    });
 
-describe("Transaction Store", () => {
-    it("should add a transaction", () => {
+    test('should add a transaction and update balance', () => {
         const store = useTransactionStore.getState();
+
         store.addTransaction({
-            id: "1",
-            date: "2024-02-01",
+            id: '1',
+            date: '2023-10-01',
             amount: 100,
-            description: "Salary",
-            type: "Deposit",
+            description: 'Salary',
+            type: 'Deposit',
         });
 
         expect(store.transactions.length).toBe(1);
-        expect(store.transactions[0].description).toBe("Salary");
-        expect(store.balance).toBe(100);
+        expect(store.transactions[0].description).toBe('Salary');
+
+        expect(store.balance).toBe(100); // You might need logic to correctly update the balance
     });
 
-    it("should remove a transaction", () => {
+    test('should remove a transaction and update balance', () => {
         const store = useTransactionStore.getState();
+
         store.addTransaction({
-            id: "1",
-            date: "2024-02-01",
+            id: '1',
+            date: '2023-10-01',
             amount: 100,
-            description: "Salary",
-            type: "Deposit",
+            description: 'Salary',
+            type: 'Deposit',
         });
 
-        store.removeTransaction("1");
+        store.removeTransaction('1');
 
         expect(store.transactions.length).toBe(0);
+
         expect(store.balance).toBe(0);
     });
 });
