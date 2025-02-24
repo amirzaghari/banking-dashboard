@@ -14,7 +14,7 @@ const AccountOverview = () => {
         .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
     return (
-        <Box>
+        <Box sx={{mt: 5}}>
             <Box display="flex" flexDirection="column" gap={1}>
                 <Chip label={`Balance: €${balance.toFixed(2)}`} color="primary" />
                 <Chip label={`Total Income: €${totalIncome.toFixed(2)}`} color="success" />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Card, CardContent, CardHeader, IconButton, Collapse, Button, Typography } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, IconButton, Collapse, Button, Typography, Toolbar } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { Link } from 'react-router-dom';
@@ -16,7 +16,9 @@ const DashboardPage = () => {
     const toggleTransactionHistory = () => setTransactionHistoryOpen(!transactionHistoryOpen);
 
     return (
-        <div style={{ margin: theme.spacing(2) }}>
+        <div style={{ margin: theme.spacing(1) }}>
+            <Toolbar />
+
             <Box display="flex" flexWrap="wrap" gap={3} justifyContent="space-between">
                 <Box flex={1}>
                     <Card elevation={3}>
@@ -42,7 +44,7 @@ const DashboardPage = () => {
                             title={
                                 <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
                                     <Typography variant="h6">Transaction History</Typography>
-                                    <Button component={Link} to="/transactions" variant="text">
+                                    <Button component={Link} to="/transactions" sx={{ textTransform: "none" }}>
                                         Manage transactions
                                     </Button>
                                 </Box>

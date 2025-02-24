@@ -1,15 +1,17 @@
 import React from 'react';
-import { Typography, Box } from '@mui/material';
+import {Typography, Box, Container} from '@mui/material';
 import TransactionList from '../components/TransactionList';
 
 const TransactionPage = () => {
     return (
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h4" gutterBottom>
-                Manage Transactions
-            </Typography>
-            <TransactionList editable={true} />
-        </Box>
+        <Container maxWidth="xl" sx={{mt: 5}}>
+            <Box sx={{padding: 2}}>
+                <Typography variant="h4" gutterBottom>
+                    Manage Transactions
+                </Typography>
+                <TransactionList editable={true}/>
+            </Box>
+        </Container>
     );
 };
 

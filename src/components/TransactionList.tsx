@@ -81,29 +81,35 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
             )}
             <List>
                 {transactions
-                    .sort(
-                        (a: Transaction, b: Transaction) =>
-                            new Date(b.date).getTime() - new Date(a.date).getTime()
-                    )
-                    .map((transaction: Transaction) => (
-                        <Card key={transaction.id} elevation={4} sx={{ mb: 2, borderRadius: 2 }}>
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                    .map((transaction) => (
+                        <Card key={transaction.id} elevation={3} sx={{ mb: 1, borderRadius: 2, py: 1, px: 2 }}>
                             <CardHeader
-                                title={`${transaction.date} - ${transaction.description}`}
-                                subheader={`€${transaction.amount}`}
+                                title={
+                                    <Typography variant="body2" color="textSecondary">
+                                        {transaction.date} - {transaction.description}
+                                    </Typography>
+                                }
+                                subheader={
+                                    <Typography variant="h6" fontWeight="bold">
+                                        €{transaction.amount}
+                                    </Typography>
+                                }
                                 action={
                                     <Chip
                                         label={transaction.type}
                                         color={transaction.type === 'Deposit' ? 'success' : 'error'}
+                                        size="small"
                                     />
                                 }
                             />
                             {editable && (
-                                <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                                    <IconButton onClick={() => handleEditOpen(transaction)}>
-                                        <EditIcon />
+                                <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: 0 }}>
+                                    <IconButton size="small" onClick={() => handleEditOpen(transaction)}>
+                                        <EditIcon fontSize="small" />
                                     </IconButton>
-                                    <IconButton onClick={() => handleDeleteOpen(transaction)}>
-                                        <DeleteIcon />
+                                    <IconButton size="small" onClick={() => handleDeleteOpen(transaction)}>
+                                        <DeleteIcon fontSize="small" />
                                     </IconButton>
                                 </CardContent>
                             )}
@@ -117,12 +123,8 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                     <TransactionForm addTransaction={handleAddSubmit} hideSubmitButton={true} />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleAddClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button type="submit" form="transactionForm" color="primary">
-                        Save
-                    </Button>
+                    <Button onClick={handleAddClose} color="primary">Cancel</Button>
+                    <Button type="submit" form="transactionForm" color="primary">Save</Button>
                 </DialogActions>
             </Dialog>
 
@@ -138,29 +140,19 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleEditClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button type="submit" form="transactionForm" color="primary">
-                        Save
-                    </Button>
+                    <Button onClick={handleEditClose} color="primary">Cancel</Button>
+                    <Button type="submit" form="transactionForm" color="primary">Save</Button>
                 </DialogActions>
             </Dialog>
 
             <Dialog open={openDeleteDialog} onClose={handleDeleteClose}>
                 <DialogTitle>Confirm Deletion</DialogTitle>
                 <DialogContent>
-                    <Typography>
-                        Are you sure you want to delete this transaction?
-                    </Typography>
+                    <Typography>Are you sure you want to delete this transaction?</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleDeleteClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleDeleteConfirm} color="secondary">
-                        Delete
-                    </Button>
+                    <Button onClick={handleDeleteClose} color="primary">Cancel</Button>
+                    <Button onClick={handleDeleteConfirm} color="secondary">Delete</Button>
                 </DialogActions>
             </Dialog>
         </Box>

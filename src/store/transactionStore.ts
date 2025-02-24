@@ -18,6 +18,17 @@ type TransactionStore = {
     updateTransaction: (id: string, updatedTransaction: Transaction) => void;
 };
 
+const defaultTransactions: Transaction[] = [
+    { id: "1", date: "2024-01-01", amount: 500, description: "Salary", type: "Deposit" },
+    { id: "2", date: "2024-01-05", amount: 200, description: "Groceries", type: "Withdrawal" },
+    { id: "3", date: "2024-01-10", amount: 100, description: "Electricity Bill", type: "Withdrawal" },
+];
+
+const getInitialTransactions = (): Transaction[] => {
+    const storedTransactions = JSON.parse(localStorage.getItem("transactions") || "null");
+    return storedTransactions && storedTransactions.length > 0 ? storedTransactions : defaultTransactions;
+};
+
 const calculateBalance = (transactions: Transaction[]): number =>
     transactions.reduce((sum, t) => (t.type === "Deposit" ? sum + t.amount : sum - t.amount), 0);
 
@@ -26,52 +37,62 @@ const saveToLocalStorage = (transactions: Transaction[], balance: number) => {
     localStorage.setItem("balance", JSON.stringify(balance));
 };
 
-const useTransactionStore = create<TransactionStore>((set, get) => ({
-    transactions: JSON.parse(localStorage.getItem("transactions") || "[]"),
-    balance: JSON.parse(localStorage.getItem("balance") || "0"),
-    history: [],
+const useTransactionStore = create<TransactionStore>((set, get) => {
+    const initialTransactions = getInitialTransactions();
+    const initialBalance = calculateBalance(initialTransactions);
 
-    addTransaction: (transaction) => {
-        const updatedTransactions = [...get().transactions, transaction];
-        const newBalance = calculateBalance(updatedTransactions);
+    // Save default transactions to localStorage if they weren't there
+    if (!localStorage.getItem("transactions")) {
+        saveToLocalStorage(initialTransactions, initialBalance);
+    }
 
-        saveToLocalStorage(updatedTransactions, newBalance);
-        set({ transactions: updatedTransactions, balance: newBalance });
-    },
+    return {
+        transactions: initialTransactions,
+        balance: initialBalance,
+        history: [],
 
-    removeTransaction: (id) => {
-        const { transactions, history } = get();
-        const transactionToRemove = transactions.find((t) => t.id === id);
-        if (!transactionToRemove) return;
+        addTransaction: (transaction) => {
+            const updatedTransactions = [...get().transactions, transaction];
+            const newBalance = calculateBalance(updatedTransactions);
 
-        const updatedTransactions = transactions.filter((t) => t.id !== id);
-        const newBalance = calculateBalance(updatedTransactions);
+            saveToLocalStorage(updatedTransactions, newBalance);
+            set({ transactions: updatedTransactions, balance: newBalance });
+        },
 
-        saveToLocalStorage(updatedTransactions, newBalance);
-        set({ transactions: updatedTransactions, balance: newBalance, history: [transactionToRemove, ...history] });
-    },
+        removeTransaction: (id) => {
+            const { transactions, history } = get();
+            const transactionToRemove = transactions.find((t) => t.id === id);
+            if (!transactionToRemove) return;
 
-    undoTransaction: () => {
-        const { transactions, history } = get();
-        if (history.length === 0) return;
+            const updatedTransactions = transactions.filter((t) => t.id !== id);
+            const newBalance = calculateBalance(updatedTransactions);
 
-        const lastDeleted = history[0];
-        const updatedTransactions = [...transactions, lastDeleted];
-        const newBalance = calculateBalance(updatedTransactions);
+            saveToLocalStorage(updatedTransactions, newBalance);
+            set({ transactions: updatedTransactions, balance: newBalance, history: [transactionToRemove, ...history] });
+        },
 
-        saveToLocalStorage(updatedTransactions, newBalance);
-        set({ transactions: updatedTransactions, balance: newBalance, history: history.slice(1) });
-    },
+        undoTransaction: () => {
+            const { transactions, history } = get();
+            if (history.length === 0) return;
 
-    updateTransaction: (id, updatedTransaction) => {
-        const updatedTransactions = get().transactions.map((t) =>
-            t.id === id ? updatedTransaction : t
-        );
-        const newBalance = calculateBalance(updatedTransactions);
+            const lastDeleted = history[0];
+            const updatedTransactions = [...transactions, lastDeleted];
+            const newBalance = calculateBalance(updatedTransactions);
 
-        saveToLocalStorage(updatedTransactions, newBalance);
-        set({ transactions: updatedTransactions, balance: newBalance });
-    },
-}));
+            saveToLocalStorage(updatedTransactions, newBalance);
+            set({ transactions: updatedTransactions, balance: newBalance, history: history.slice(1) });
+        },
+
+        updateTransaction: (id, updatedTransaction) => {
+            const updatedTransactions = get().transactions.map((t) =>
+                t.id === id ? updatedTransaction : t
+            );
+            const newBalance = calculateBalance(updatedTransactions);
+
+            saveToLocalStorage(updatedTransactions, newBalance);
+            set({ transactions: updatedTransactions, balance: newBalance });
+        },
+    };
+});
 
 export default useTransactionStore;
