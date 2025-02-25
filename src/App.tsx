@@ -4,6 +4,7 @@ import DashboardPage from "./pages/DashboardPage";
 import TransactionPage from "./pages/TransactionPage";
 import Layout from "./components/Layout";
 import "./App.css";
+import ImportExportPage from "./pages/ImportExportPage";
 
 const App: React.FC = () => {
     return (
@@ -13,6 +14,7 @@ const App: React.FC = () => {
                     <Routes>
                         <Route path="/" element={<DashboardPage />} />
                         <Route path="/transactions" element={<TransactionPage />} />
+                        <Route path="/import-export" element={<ImportExportPage />} />
                     </Routes>
                 </Layout>
             </div>

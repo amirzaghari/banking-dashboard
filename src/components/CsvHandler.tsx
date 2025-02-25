@@ -1,8 +1,17 @@
+import React, { useImperativeHandle, forwardRef } from "react";
 import Papa from "papaparse";
 import useTransactionStore, { Transaction } from "../store/transactionStore";
 
-const CsvHandler = () => {
+interface CsvHandlerProps {}
+
+export interface CsvHandlerRef {
+    handleExport: () => void;
+    handleImport: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const CsvHandler = forwardRef<CsvHandlerRef, CsvHandlerProps>((props, ref) => {
     const { transactions, addTransaction } = useTransactionStore();
+    const [error, setError] = React.useState<string | null>(null);
 
     const handleExport = () => {
         const csvData = transactions.map((t: Transaction) => ({
@@ -25,36 +34,75 @@ const CsvHandler = () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        setError(null);
+
         Papa.parse(file, {
+            header: true,
             complete: (result) => {
-                const parsedTransactions = result.data as string[][];
-                parsedTransactions.shift(); // Remove header
+                const parsedTransactions = result.data as any[];
+                const newTransactions: Transaction[] = [];
 
-                parsedTransactions.forEach((row) => {
-                    const [date, amount, description, type] = row;
-                    if (!date || !amount || !description || !type) return;
+                parsedTransactions.forEach((row, index) => {
+                    const { Date, Amount, Description, Type } = row;
 
-                    addTransaction({
+                    if (!Date || !Amount || !Description || !Type) {
+                        setError(`Row ${index + 1} is missing required fields.`);
+                        return;
+                    }
+
+                    const amount = parseFloat(Amount);
+                    if (isNaN(amount)) {
+                        setError(`Row ${index + 1} has an invalid amount.`);
+                        return;
+                    }
+
+                    if (Type !== "Deposit" && Type !== "Withdrawal") {
+                        setError(`Row ${index + 1} has an invalid transaction type.`);
+                        return;
+                    }
+
+                    const isDuplicate = transactions.some(
+                        (t) =>
+                            t.date === Date &&
+                            t.amount === amount &&
+                            t.description === Description &&
+                            t.type === Type
+                    );
+
+                    if (isDuplicate) {
+                        setError(`Row ${index + 1} is a duplicate transaction.`);
+                        return;
+                    }
+
+                    newTransactions.push({
                         id: Date.now().toString(),
-                        date,
-                        amount: parseFloat(amount),
-                        description,
-                        type: type as "Deposit" | "Withdrawal",
+                        date: Date,
+                        amount,
+                        description: Description,
+                        type: Type as "Deposit" | "Withdrawal",
                     });
                 });
+
+                if (newTransactions.length > 0) {
+                    newTransactions.forEach((t) => addTransaction(t));
+                }
             },
-            header: true,
+            error: (err) => {
+                setError("Failed to parse the CSV file. Please check the file format.");
+            },
         });
     };
 
+    useImperativeHandle(ref, () => ({
+        handleExport,
+        handleImport,
+    }));
+
     return (
         <div>
-            <h2>CSV Import/Export</h2>
-            <label htmlFor="file-upload">Upload CSV</label>
-            <input id="file-upload" type="file"/>
-            <button onClick={handleExport}>Export CSV</button>
+            {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
     );
-};
+});
 
 export default CsvHandler;

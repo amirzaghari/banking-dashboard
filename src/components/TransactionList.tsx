@@ -151,6 +151,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                             <TextField
                                 label="To"
                                 type="date"
+                                InputLabelProps={{ shrink: true }}
                                 value={dateTo}
                                 onChange={e => setDateTo(e.target.value)}
                                 fullWidth
