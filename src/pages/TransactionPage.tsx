@@ -4,7 +4,7 @@ import TransactionList from '../components/TransactionList';
 
 const TransactionPage = () => {
     return (
-        <Container maxWidth="xl" sx={{mt: 5}}>
+        <Container maxWidth="xl" sx={{mt: 8}}>
             <Box sx={{padding: 2}}>
                 <Typography variant="h4" gutterBottom>
                     Manage Transactions

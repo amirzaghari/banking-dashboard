@@ -46,19 +46,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             {/* Navigation Sidebar */}
             <Navigation open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-            {/* Main Content Wrapper with Background Image */}
-            <Box
-                sx={{
-                    backgroundImage: "url('/bg.jpeg')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                    minHeight: "100vh",
-                    display: "flex",
-                    flexDirection: "column",
-                }}
-            >
-                <Container maxWidth="xl" sx={{ mt: 5 }}>
+            {/* Main Content Wrapper */}
+            <Box className={`layout-wrapper ${mode === "dark" ? "dark-mode" : "light-mode"}`}>
+                <Box className="layout-overlay" />
+                <Container maxWidth="xl" className="layout-content">
                     {children}
                 </Container>
             </Box>

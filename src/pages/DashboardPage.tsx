@@ -20,7 +20,7 @@ const DashboardPage = () => {
             <Toolbar />
 
             <Box display="flex" flexWrap="wrap" gap={3} justifyContent="space-between">
-                <Box flex={1}>
+                <Box flex={.4}>
                     <Card elevation={3}>
                         <CardHeader
                             title="Account Overview"

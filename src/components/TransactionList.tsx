@@ -13,11 +13,20 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    TextField,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel,
+    Pagination,
+    Stack
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useTransactionStore, { Transaction } from '../store/transactionStore';
 import TransactionForm from './TransactionForm';
+
+const itemsPerPage = 20;
 
 type TransactionListProps = {
     editable: boolean;
@@ -31,6 +40,11 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
     const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterType, setFilterType] = useState('All');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
+    const [page, setPage] = useState(1);
 
     const handleAddOpen = () => setOpenAddDialog(true);
     const handleAddClose = () => setOpenAddDialog(false);
@@ -72,6 +86,15 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
         handleEditClose();
     };
 
+    const filteredTransactions = transactions
+        .filter(t => (filterType === 'All' || t.type === filterType))
+        .filter(t => (!searchTerm || t.description.toLowerCase().includes(searchTerm.toLowerCase())))
+        .filter(t => (!dateFrom || new Date(t.date) >= new Date(dateFrom)))
+        .filter(t => (!dateTo || new Date(t.date) <= new Date(dateTo)))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    const paginatedTransactions = filteredTransactions.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
     return (
         <Box sx={{ padding: 2 }}>
             {editable && (
@@ -79,43 +102,88 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                     Add Transaction
                 </Button>
             )}
+
+            <Box sx={{ mb: 2 }}>
+                <Stack direction="row" spacing={2}>
+                    <Box sx={{ flex: 1 }}>
+                        <TextField
+                            label="Search"
+                            variant="outlined"
+                            fullWidth
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                        />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <FormControl fullWidth>
+                            <InputLabel>Type</InputLabel>
+                            <Select value={filterType} onChange={e => setFilterType(e.target.value)}>
+                                <MenuItem value="All">All Transactions</MenuItem>
+                                <MenuItem value="Deposit">Only Deposits</MenuItem>
+                                <MenuItem value="Withdrawal">Only Withdrawals</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <TextField
+                            label="From"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            value={dateFrom}
+                            onChange={e => setDateFrom(e.target.value)}
+                            fullWidth
+                        />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <TextField
+                            label="To"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            value={dateTo}
+                            onChange={e => setDateTo(e.target.value)}
+                            fullWidth
+                        />
+                    </Box>
+                </Stack>
+            </Box>
+
             <List>
-                {transactions
-                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                    .map((transaction) => (
-                        <Card key={transaction.id} elevation={3} sx={{ mb: 1, borderRadius: 2, py: 1, px: 2 }}>
-                            <CardHeader
-                                title={
-                                    <Typography variant="body2" color="textSecondary">
-                                        {transaction.date} - {transaction.description}
-                                    </Typography>
-                                }
-                                subheader={
-                                    <Typography variant="h6" fontWeight="bold">
-                                        €{transaction.amount}
-                                    </Typography>
-                                }
-                                action={
-                                    <Chip
-                                        label={transaction.type}
-                                        color={transaction.type === 'Deposit' ? 'success' : 'error'}
-                                        size="small"
-                                    />
-                                }
-                            />
-                            {editable && (
-                                <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: 0 }}>
-                                    <IconButton size="small" onClick={() => handleEditOpen(transaction)}>
-                                        <EditIcon fontSize="small" />
-                                    </IconButton>
-                                    <IconButton size="small" onClick={() => handleDeleteOpen(transaction)}>
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </CardContent>
-                            )}
-                        </Card>
-                    ))}
+                {paginatedTransactions.map(transaction => (
+                    <Card key={transaction.id} elevation={3} sx={{ mb: 1, borderRadius: 2, py: 1, px: 2 }}>
+                        <CardHeader
+                            title={
+                                <Typography variant="body2" color="textSecondary">
+                                    {transaction.date} - {transaction.description}
+                                </Typography>
+                            }
+                            subheader={
+                                <Typography variant="h6" fontWeight="bold">
+                                    €{transaction.amount}
+                                </Typography>
+                            }
+                            action={
+                                <Chip label={transaction.type} color={transaction.type === 'Deposit' ? 'success' : 'error'} size="small" />
+                            }
+                        />
+                        {editable && (
+                            <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: 0 }}>
+                                <IconButton size="small" onClick={() => handleEditOpen(transaction)}>
+                                    <EditIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton size="small" onClick={() => handleDeleteOpen(transaction)}>
+                                    <DeleteIcon fontSize="small" />
+                                </IconButton>
+                            </CardContent>
+                        )}
+                    </Card>
+                ))}
             </List>
+
+            <Pagination count={Math.ceil(filteredTransactions.length / itemsPerPage)}
+                        page={page}
+                        onChange={(_, value) => setPage(value)}
+                        sx={{ mt: 2 }}
+            />
 
             <Dialog open={openAddDialog} onClose={handleAddClose}>
                 <DialogTitle>Add New Transaction</DialogTitle>
@@ -134,8 +202,8 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                     {transactionToEdit && (
                         <TransactionForm
                             addTransaction={handleEditSubmit}
+                            hideSubmitButton={false}
                             initialTransaction={transactionToEdit}
-                            hideSubmitButton={true}
                         />
                     )}
                 </DialogContent>
@@ -146,7 +214,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
             </Dialog>
 
             <Dialog open={openDeleteDialog} onClose={handleDeleteClose}>
-                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogTitle>Delete Transaction</DialogTitle>
                 <DialogContent>
                     <Typography>Are you sure you want to delete this transaction?</Typography>
                 </DialogContent>
