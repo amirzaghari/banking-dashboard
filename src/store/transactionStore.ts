@@ -41,7 +41,6 @@ const useTransactionStore = create<TransactionStore>((set, get) => {
     const initialTransactions = getInitialTransactions();
     const initialBalance = calculateBalance(initialTransactions);
 
-    // Save default transactions to localStorage if they weren't there
     if (!localStorage.getItem("transactions")) {
         saveToLocalStorage(initialTransactions, initialBalance);
     }
@@ -52,6 +51,10 @@ const useTransactionStore = create<TransactionStore>((set, get) => {
         history: [],
 
         addTransaction: (transaction) => {
+            if (!transaction.description.trim()) return;
+            if (transaction.amount <= 0) return;
+            if (transaction.type === "Withdrawal" && transaction.amount > get().balance) return;
+
             const updatedTransactions = [...get().transactions, transaction];
             const newBalance = calculateBalance(updatedTransactions);
 
@@ -76,6 +79,8 @@ const useTransactionStore = create<TransactionStore>((set, get) => {
             if (history.length === 0) return;
 
             const lastDeleted = history[0];
+            if (lastDeleted.type === "Withdrawal" && lastDeleted.amount > get().balance) return;
+
             const updatedTransactions = [...transactions, lastDeleted];
             const newBalance = calculateBalance(updatedTransactions);
 
@@ -84,6 +89,10 @@ const useTransactionStore = create<TransactionStore>((set, get) => {
         },
 
         updateTransaction: (id, updatedTransaction) => {
+            if (!updatedTransaction.description.trim()) return;
+            if (updatedTransaction.amount <= 0) return;
+            if (updatedTransaction.type === "Withdrawal" && updatedTransaction.amount > get().balance) return;
+
             const updatedTransactions = get().transactions.map((t) =>
                 t.id === id ? updatedTransaction : t
             );

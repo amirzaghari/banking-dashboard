@@ -24,7 +24,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useTransactionStore, { Transaction } from '../store/transactionStore';
-import TransactionForm from './TransactionForm';
+import TransactionForm from '../forms/TransactionForm';
 
 const itemsPerPage = 20;
 
@@ -103,21 +103,31 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                 </Button>
             )}
 
+            {/* Search and Filter Section */}
             <Box sx={{ mb: 2 }}>
-                <Stack direction="row" spacing={2}>
+                <Stack
+                    direction={{ xs: 'column', sm: 'row' }} // Stack vertically on mobile, horizontally on larger screens
+                    spacing={2}
+                >
                     <Box sx={{ flex: 1 }}>
-                        <TextField
-                            label="Search"
-                            variant="outlined"
-                            fullWidth
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                        />
+                        <FormControl fullWidth variant="outlined">
+                            <TextField
+                                label="Search"
+                                variant="outlined"
+                                fullWidth
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                            />
+                        </FormControl>
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                        <FormControl fullWidth>
+                        <FormControl fullWidth variant="outlined">
                             <InputLabel>Type</InputLabel>
-                            <Select value={filterType} onChange={e => setFilterType(e.target.value)}>
+                            <Select
+                                value={filterType}
+                                onChange={e => setFilterType(e.target.value)}
+                                label="Type"
+                            >
                                 <MenuItem value="All">All Transactions</MenuItem>
                                 <MenuItem value="Deposit">Only Deposits</MenuItem>
                                 <MenuItem value="Withdrawal">Only Withdrawals</MenuItem>
@@ -125,28 +135,33 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                         </FormControl>
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                        <TextField
-                            label="From"
-                            type="date"
-                            InputLabelProps={{ shrink: true }}
-                            value={dateFrom}
-                            onChange={e => setDateFrom(e.target.value)}
-                            fullWidth
-                        />
+                        <FormControl fullWidth variant="outlined">
+                            <TextField
+                                label="From"
+                                type="date"
+                                InputLabelProps={{ shrink: true }}
+                                value={dateFrom}
+                                onChange={e => setDateFrom(e.target.value)}
+                                fullWidth
+                            />
+                        </FormControl>
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                        <TextField
-                            label="To"
-                            type="date"
-                            InputLabelProps={{ shrink: true }}
-                            value={dateTo}
-                            onChange={e => setDateTo(e.target.value)}
-                            fullWidth
-                        />
+                        <FormControl fullWidth variant="outlined">
+                            <TextField
+                                label="To"
+                                type="date"
+                                InputLabelProps={{ shrink: true }}
+                                value={dateTo}
+                                onChange={e => setDateTo(e.target.value)}
+                                fullWidth
+                            />
+                        </FormControl>
                     </Box>
                 </Stack>
             </Box>
 
+            {/* Transaction List */}
             <List>
                 {paginatedTransactions.map(transaction => (
                     <Card key={transaction.id} elevation={3} sx={{ mb: 1, borderRadius: 2, py: 1, px: 2 }}>
@@ -179,12 +194,15 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                 ))}
             </List>
 
-            <Pagination count={Math.ceil(filteredTransactions.length / itemsPerPage)}
-                        page={page}
-                        onChange={(_, value) => setPage(value)}
-                        sx={{ mt: 2 }}
+            {/* Pagination */}
+            <Pagination
+                count={Math.ceil(filteredTransactions.length / itemsPerPage)}
+                page={page}
+                onChange={(_, value) => setPage(value)}
+                sx={{ mt: 2 }}
             />
 
+            {/* Dialogs */}
             <Dialog open={openAddDialog} onClose={handleAddClose}>
                 <DialogTitle>Add New Transaction</DialogTitle>
                 <DialogContent>

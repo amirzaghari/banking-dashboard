@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import TransactionForm from '../components/TransactionForm';
+import TransactionForm from '../forms/TransactionForm';
 
 test('should add a new transaction', () => {
     const addTransactionMock = jest.fn();
