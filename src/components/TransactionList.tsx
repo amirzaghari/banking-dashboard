@@ -106,7 +106,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
             {/* Search and Filter Section */}
             <Box sx={{ mb: 2 }}>
                 <Stack
-                    direction={{ xs: 'column', sm: 'row' }} // Stack vertically on mobile, horizontally on larger screens
+                    direction={{ xs: 'column', sm: 'row' }}
                     spacing={2}
                 >
                     <Box sx={{ flex: 1 }}>
@@ -151,7 +151,6 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                             <TextField
                                 label="To"
                                 type="date"
-                                InputLabelProps={{ shrink: true }}
                                 value={dateTo}
                                 onChange={e => setDateTo(e.target.value)}
                                 fullWidth
