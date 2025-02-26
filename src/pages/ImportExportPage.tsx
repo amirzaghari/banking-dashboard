@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Container, Typography, Box, Button, Paper, Alert, Stack } from "@mui/material";
-import CsvHandler, { CsvHandlerRef } from "../components/CsvHandler"; // Ensure CsvHandler is imported
+import CsvHandler, { CsvHandlerRef } from "../handlers/CsvHandler"; // Ensure CsvHandler is imported
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const ImportExportPage = () => {

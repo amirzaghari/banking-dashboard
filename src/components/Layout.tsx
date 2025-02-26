@@ -3,6 +3,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useMemo, useState } from "react";
 import { Brightness4, Brightness7, Menu as MenuIcon } from "@mui/icons-material";
 import Navigation from "./Navigation";
+import CurrencySelector from "./CurrencySelector";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const [mode, setMode] = useState<"light" | "dark">("dark");
@@ -35,6 +36,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         Banking Dashboard
                     </Typography>
+
+                    {/* Currency Selector */}
+                    <CurrencySelector />
 
                     {/* Theme Toggle Button (Now correctly switching icons) */}
                     <IconButton onClick={toggleTheme} color="inherit">

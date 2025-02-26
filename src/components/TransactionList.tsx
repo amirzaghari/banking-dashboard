@@ -25,6 +25,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useTransactionStore, { Transaction } from '../store/transactionStore';
 import TransactionForm from '../forms/TransactionForm';
+import { useCurrency } from '../context/CurrencyContext'; // Import useCurrency
 
 const itemsPerPage = 20;
 
@@ -34,6 +35,7 @@ type TransactionListProps = {
 
 const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
     const { transactions, addTransaction, updateTransaction, removeTransaction } = useTransactionStore();
+    const { convert, getCurrencySymbol } = useCurrency();
 
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -94,6 +96,8 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const paginatedTransactions = filteredTransactions.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+    const currencySymbol = getCurrencySymbol();
 
     return (
         <Box sx={{ padding: 2 }}>
@@ -173,7 +177,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                             }
                             subheader={
                                 <Typography variant="h6" fontWeight="bold">
-                                    €{transaction.amount}
+                                    {currencySymbol} {convert(transaction.amount).toFixed(2)} {/* Convert amount */}
                                 </Typography>
                             }
                             action={

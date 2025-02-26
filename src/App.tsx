@@ -5,20 +5,23 @@ import TransactionPage from "./pages/TransactionPage";
 import Layout from "./components/Layout";
 import "./App.css";
 import ImportExportPage from "./pages/ImportExportPage";
+import { CurrencyProvider } from "./context/CurrencyContext";
 
 const App: React.FC = () => {
     return (
-        <Router>
-            <div className="app">
-                <Layout>
-                    <Routes>
-                        <Route path="/" element={<DashboardPage />} />
-                        <Route path="/transactions" element={<TransactionPage />} />
-                        <Route path="/import-export" element={<ImportExportPage />} />
-                    </Routes>
-                </Layout>
-            </div>
-        </Router>
+        <CurrencyProvider>
+            <Router>
+                <div className="app">
+                    <Layout>
+                        <Routes>
+                            <Route path="/" element={<DashboardPage />} />
+                            <Route path="/transactions" element={<TransactionPage />} />
+                            <Route path="/import-export" element={<ImportExportPage />} />
+                        </Routes>
+                    </Layout>
+                </div>
+            </Router>
+        </CurrencyProvider>
     );
 };
 
