@@ -28,9 +28,9 @@ const AccountOverview = () => {
     return (
         <Box sx={{ mt: 5 }}>
             <Box display="flex" flexDirection="column" gap={1}>
-                <Chip label={`Balance: ${currencySymbol} ${convert(balance).toFixed(2)}`} color="primary" />
-                <Chip label={`Total Income: ${currencySymbol} ${convert(totalIncome).toFixed(2)}`} color="success" />
-                <Chip label={`Total Expenses: ${currencySymbol} ${convert(totalExpenses).toFixed(2)}`} color="error" />
+                <Chip label={`Balance: ${currencySymbol}${convert(balance).toFixed(2)}`} color="primary" />
+                <Chip label={`Total Income: ${currencySymbol}${convert(totalIncome).toFixed(2)}`} color="success" />
+                <Chip label={`Total Expenses: ${currencySymbol}${convert(totalExpenses).toFixed(2)}`} color="error" />
             </Box>
         </Box>
     );

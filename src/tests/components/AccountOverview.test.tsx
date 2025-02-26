@@ -2,12 +2,26 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import AccountOverview from '../../components/AccountOverview';
 import useTransactionStore from '../../store/transactionStore';
+import { useCurrency } from '../../context/CurrencyContext';
 
 jest.mock('../../store/transactionStore');
+jest.mock('../../context/CurrencyContext');
+
+jest.mock('ky', () => ({
+    get: jest.fn(() => ({
+        json: jest.fn(() => Promise.resolve({ rates: { USD: 1.18 } })),
+    })),
+}));
 
 describe('AccountOverview', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+
+        (useCurrency as jest.Mock).mockReturnValue({
+            currency: 'EUR',
+            convert: (amount: number) => amount,
+            getCurrencySymbol: () => '€',
+        });
     });
 
     it('renders the balance, total income, and total expenses correctly', () => {
@@ -72,4 +86,4 @@ describe('AccountOverview', () => {
         expect(screen.getByText('Total Income: €0.00')).toBeInTheDocument();
         expect(screen.getByText('Total Expenses: €300.25')).toBeInTheDocument();
     });
-});
+ });
