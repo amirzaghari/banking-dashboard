@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Transaction } from '../store/transactionStore';
 import useTransactionStore from '../store/transactionStore';
 
@@ -20,6 +20,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     const [type, setType] = useState<"Deposit" | "Withdrawal">(initialTransaction ? initialTransaction.type : "Deposit");
     const [date, setDate] = useState<string>(initialTransaction ? initialTransaction.date : new Date().toISOString().split('T')[0]);
     const [error, setError] = useState<string>('');
+
+    const descriptionInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         if (initialTransaction) {
@@ -51,7 +53,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         const newTransaction: Transaction = {
             id: initialTransaction ? initialTransaction.id : new Date().toISOString(),
             date,
-            amount: type === "Deposit" ? amount : -Math.abs(amount),
+            amount,
             description,
             type,
         };
@@ -85,6 +87,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     onChange={(e) => setDescription(e.target.value)}
                     required
                     variant="outlined"
+                    inputRef={descriptionInputRef}
                 />
             </FormControl>
             <FormControl fullWidth margin="normal" variant="outlined">
@@ -110,11 +113,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                 />
             </FormControl>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {!hideSubmitButton && (
-                <Button type="submit" variant="contained" color="primary">
-                    {initialTransaction ? 'Update Transaction' : 'Add Transaction'}
-                </Button>
-            )}
         </form>
     );
 };

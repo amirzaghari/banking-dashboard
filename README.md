@@ -7,6 +7,7 @@ This is a modern banking dashboard application that allows users to manage their
 
 - **Manage Transactions**: Add, update, remove transactions with detailed information (amount, description, type, etc.)
 - **Transaction Filters & Search**: Filter and search transactions by various parameters such as amount, type (deposit/withdrawal), description, etc.
+- **Export and Import Transactions**: Export and import transaction as a .csv file
 - **Currency Selector**: Change the currency used for transaction amounts and display the balance in the selected currency.
 - **Charts**: Visual representation of financial data, including balance, total income, and total expenses.
 - **Dark Mode / Light Mode**: Switch between dark and light themes to match your preferences.
