@@ -1,46 +1,104 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Banking Dashboard
 
-## Available Scripts
+This is a modern banking dashboard application that allows users to manage their transactions, view their financial data, change currency, and track their balance and expenses through an intuitive interface. The dashboard supports both **dark** and **light** modes and is built with a mobile-first design approach.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- **Manage Transactions**: Add, update, remove transactions with detailed information (amount, description, type, etc.)
+- **Transaction Filters & Search**: Filter and search transactions by various parameters such as amount, type (deposit/withdrawal), description, etc.
+- **Currency Selector**: Change the currency used for transaction amounts and display the balance in the selected currency.
+- **Charts**: Visual representation of financial data, including balance, total income, and total expenses.
+- **Dark Mode / Light Mode**: Switch between dark and light themes to match your preferences.
+- **Mobile-First Design**: The app is fully responsive and optimized for mobile devices.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Technologies Used
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **React**: For building the user interface
+- **Zustand**: For state management
+- **Chart.js**: For visualizing financial data in charts
+- **Styled-components**: For theming and styling
+- **Jest**: For unit testing
+- **React Context API**: For managing and providing global state, like currency selection
 
-### `npm test`
+## Setup and Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/amirzaghari/banking-dashboard
+    ```
 
-### `npm run build`
+2. Navigate to the project folder:
+    ```bash
+    cd banking-dashboard
+    ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Install the required dependencies:
+    ```bash
+    npm install
+    ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Running the Project
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Once the dependencies are installed, you can run the application locally:
 
-### `npm run eject`
+```bash
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+This will start the development server and open the application in your browser at `http://localhost:3000`.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Running Tests
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+To run the tests, navigate to the `src/tests` directory and execute the following command:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm test
+```
 
-## Learn More
+This will run all tests and display the results in your terminal.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Folder Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The project folder is organized as follows:
+
+```
+public
+src
+  components
+    AccountOverview.tsx
+    AccountOverviewChart.tsx
+    CurrencySelector.tsx
+    Layout.tsx
+    Navigation.tsx
+    TransactionList.tsx
+  context
+    CurrencyContext.tsx
+  forms
+    TransactionForm.tsx
+  handlers
+    CsvHandler.tsx
+    CurrencyHandler.tsx
+  hooks
+    useTransactions.ts
+  pages
+    DashboardPage.tsx
+    ImportExportPage.tsx
+    TransactionPage.tsx
+  store
+    transactionStore.ts
+```
+
+## Contributing
+
+Feel free to fork this repository and submit pull requests for any improvements or bug fixes. Contributions are welcome!
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- React: A JavaScript library for building user interfaces.
+- Zustand: A minimalistic state management library for React.
+- Chart.js: A simple and flexible charting library.
