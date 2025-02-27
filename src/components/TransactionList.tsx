@@ -26,7 +26,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'; // Corrected import for the copy icon
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import useTransactionStore, { Transaction } from '../store/transactionStore';
 import TransactionForm from '../forms/TransactionForm';
 import { useCurrency } from '../context/CurrencyContext';
