@@ -19,13 +19,16 @@ import {
     FormControl,
     InputLabel,
     Pagination,
-    Stack
+    Stack,
+    Snackbar,
+    Alert, Tooltip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ContentCopyIcon from '@mui/icons-material/Replay';
 import useTransactionStore, { Transaction } from '../store/transactionStore';
 import TransactionForm from '../forms/TransactionForm';
-import { useCurrency } from '../context/CurrencyContext'; // Import useCurrency
+import { useCurrency } from '../context/CurrencyContext';
 
 const itemsPerPage = 20;
 
@@ -47,6 +50,8 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
     const [page, setPage] = useState(1);
+    const [lastAction, setLastAction] = useState<{ type: 'add' | 'update' | 'delete', transaction: Transaction } | null>(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     const handleAddOpen = () => setOpenAddDialog(true);
     const handleAddClose = () => setOpenAddDialog(false);
@@ -71,21 +76,50 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
 
     const handleDeleteConfirm = () => {
         if (transactionToDelete) {
+            setLastAction({ type: 'delete', transaction: transactionToDelete });
             removeTransaction(transactionToDelete.id);
+            setSnackbarOpen(true);
         }
         handleDeleteClose();
     };
 
     const handleAddSubmit = (transaction: Transaction) => {
         addTransaction(transaction);
+        setLastAction({ type: 'add', transaction });
+        setSnackbarOpen(true);
         handleAddClose();
     };
 
     const handleEditSubmit = (updatedTransaction: Transaction) => {
         if (transactionToEdit) {
+            setLastAction({ type: 'update', transaction: transactionToEdit });
             updateTransaction(transactionToEdit.id, updatedTransaction);
+            setSnackbarOpen(true);
         }
         handleEditClose();
+    };
+
+    const handleUndo = () => {
+        if (lastAction) {
+            switch (lastAction.type) {
+                case 'add':
+                    removeTransaction(lastAction.transaction.id);
+                    break;
+                case 'update':
+                    updateTransaction(lastAction.transaction.id, lastAction.transaction);
+                    break;
+                case 'delete':
+                    addTransaction(lastAction.transaction);
+                    break;
+            }
+            setLastAction(null);
+            setSnackbarOpen(false);
+        }
+    };
+
+    const handleReuseTransaction = (transaction: Transaction) => {
+        setTransactionToEdit(transaction);
+        setOpenAddDialog(true);
     };
 
     const filteredTransactions = transactions
@@ -177,7 +211,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                             }
                             subheader={
                                 <Typography variant="h6" fontWeight="bold">
-                                    {currencySymbol} {convert(transaction.amount).toFixed(2)} {/* Convert amount */}
+                                    {currencySymbol} {convert(transaction.amount).toFixed(2)}
                                 </Typography>
                             }
                             action={
@@ -186,12 +220,21 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                         />
                         {editable && (
                             <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, pt: 0 }}>
-                                <IconButton size="small" onClick={() => handleEditOpen(transaction)}>
-                                    <EditIcon fontSize="small" />
-                                </IconButton>
-                                <IconButton size="small" onClick={() => handleDeleteOpen(transaction)}>
-                                    <DeleteIcon fontSize="small" />
-                                </IconButton>
+                                <Tooltip title="Edit Transaction" arrow>
+                                    <IconButton size="small" onClick={() => handleEditOpen(transaction)}>
+                                        <EditIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Delete Transaction" arrow>
+                                    <IconButton size="small" onClick={() => handleDeleteOpen(transaction)}>
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Duplicate Transaction" arrow>
+                                    <IconButton size="small" onClick={() => handleReuseTransaction(transaction)}>
+                                        <ContentCopyIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
                             </CardContent>
                         )}
                     </Card>
@@ -210,7 +253,11 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
             <Dialog open={openAddDialog} onClose={handleAddClose}>
                 <DialogTitle>Add New Transaction</DialogTitle>
                 <DialogContent>
-                    <TransactionForm addTransaction={handleAddSubmit} hideSubmitButton={true} />
+                    <TransactionForm
+                        addTransaction={handleAddSubmit}
+                        hideSubmitButton={true}
+                        initialTransaction={transactionToEdit || undefined} // Fix: Pass undefined if null
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleAddClose} color="primary">Cancel</Button>
@@ -245,6 +292,25 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                     <Button onClick={handleDeleteConfirm} color="secondary">Delete</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Snackbar for Undo */}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={() => setSnackbarOpen(false)}
+            >
+                <Alert
+                    onClose={() => setSnackbarOpen(false)}
+                    severity="info"
+                    action={
+                        <Button color="inherit" size="small" onClick={handleUndo}>
+                            UNDO
+                        </Button>
+                    }
+                >
+                    Transaction {lastAction?.type === 'add' ? 'added' : lastAction?.type === 'update' ? 'updated' : 'deleted'}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

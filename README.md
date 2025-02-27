@@ -5,7 +5,7 @@ This is a modern banking dashboard application that allows users to manage their
 
 ## Features
 
-- **Manage Transactions**: Add, update, remove transactions with detailed information (amount, description, type, etc.)
+- **Manage Transactions**: Add, update, remove, duplicate and undo transactions with detailed information (amount, description, type, etc.)
 - **Transaction Filters & Search**: Filter and search transactions by various parameters such as amount, type (deposit/withdrawal), description, etc.
 - **Export and Import Transactions**: Export and import transaction as a .csv file
 - **Currency Selector**: Change the currency used for transaction amounts and display the balance in the selected currency.
@@ -21,6 +21,17 @@ This is a modern banking dashboard application that allows users to manage their
 - **Styled-components**: For theming and styling
 - **Jest**: For unit testing
 - **React Context API**: For managing and providing global state, like currency selection
+
+## 🚀 Potential Improvements  
+
+Here are some areas that could enhance the project further:  
+- **🔍 E2E Testing** – Implement **Cypress** end-to-end tests to ensure seamless user interactions across pages.  
+- **✅ Expanded Test Coverage** – Add **unit and integration tests** for all components and forms to improve reliability.  
+- **🎨 BEM Methodology** – Enhance **code readability and maintainability** by fully utilizing the **Block-Element-Modifier (BEM)** approach. 
+- **🛠 More Reusable Components** – Develop **a list builder** or **a form builder** to streamline repetitive tasks and improve efficiency.  
+
+These improvements could make the project more scalable, maintainable, and test-driven.
+
 
 ## Setup and Installation
 
