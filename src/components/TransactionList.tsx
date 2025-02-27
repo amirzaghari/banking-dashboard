@@ -21,11 +21,12 @@ import {
     Pagination,
     Stack,
     Snackbar,
-    Alert, Tooltip
+    Alert,
+    Tooltip,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ContentCopyIcon from '@mui/icons-material/Replay';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'; // Corrected import for the copy icon
 import useTransactionStore, { Transaction } from '../store/transactionStore';
 import TransactionForm from '../forms/TransactionForm';
 import { useCurrency } from '../context/CurrencyContext';
@@ -118,8 +119,14 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
     };
 
     const handleReuseTransaction = (transaction: Transaction) => {
-        setTransactionToEdit(transaction);
-        setOpenAddDialog(true);
+        const duplicatedTransaction: Transaction = {
+            ...transaction,
+            id: Date.now().toString(),
+            date: new Date().toISOString().split('T')[0],
+        };
+        addTransaction(duplicatedTransaction);
+        setSnackbarOpen(true);
+        setLastAction({ type: 'add', transaction: duplicatedTransaction });
     };
 
     const filteredTransactions = transactions
@@ -256,7 +263,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ editable }) => {
                     <TransactionForm
                         addTransaction={handleAddSubmit}
                         hideSubmitButton={true}
-                        initialTransaction={transactionToEdit || undefined} // Fix: Pass undefined if null
+                        initialTransaction={transactionToEdit || undefined}
                     />
                 </DialogContent>
                 <DialogActions>
